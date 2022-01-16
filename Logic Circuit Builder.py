@@ -2,16 +2,19 @@ from cgitb import text
 from textwrap import fill
 import tkinter as tk
 from tkinter import *
+from unicodedata import name
 
 one_ = [[[],[],[],[],[]],[[],[],[],[],[]],[[],[],[],[],[]],[[],[],[],[],[]],[[],[],[],[],[]]]
 two_ = [[[],[],[],[],[]],[[],[],[],[],[]],[[],[],[],[],[]],[[],[],[],[],[]],[[],[],[],[],[]]]
 three_ = [[[],[],[],[],[]],[[],[],[],[],[]],[[],[],[],[],[]],[[],[],[],[],[]],[[],[],[],[],[]]]
 four_ = [[[],[],[],[],[]],[[],[],[],[],[]],[[],[],[],[],[]],[[],[],[],[],[]],[[],[],[],[],[]]]
-name_count = 65
+
 one_x = 100
 two_x = 100
 three_x = 100
 four_x = 100
+
+taken = []
 
 def NOR_(inputs):
     for val in inputs:
@@ -45,6 +48,7 @@ def NOT_(input):
 
 
 class Window(Frame):
+    name_count = 65
     def __init__(self, master=None):
         Frame.__init__(self,master)
         self.master = master
@@ -62,9 +66,9 @@ class Window(Frame):
         createwindow = Toplevel(app)
         mainframe_ = Frame(createwindow, bg = "gray")
         mainexit_ = Button(mainframe_, text="Cancel", command = createwindow.destroy, bg = "orange")
-        mainexit_.pack(side=RIGHT, padx=20, pady=20)
-        maincreate_ = Button(mainframe_, text="Create", bg="orange")
+        maincreate_ = Button(mainframe_, text="Create",command=self.create_gate , bg="orange")
         maincreate_.pack(side=LEFT, padx=20, pady=20)
+        mainexit_.pack(side=RIGHT, padx=20, pady=20)
         createwindow.title("Create Gate")
         createwindow.geometry("300x200")
         mainframe_.pack(side=BOTTOM, fill="both")
@@ -92,35 +96,66 @@ class Window(Frame):
         input_options_drop = OptionMenu(terframe_, number_of_inputs_var, *number_options).pack(side=RIGHT)
 
     def create_gate(self):
-        if cols_var.get() == 1:
-            one_[rows_var.get()-1][4] = cols_var.get()
-            one_[rows_var.get()-1][3] = rows_var.get()
-            one_[rows_var.get()-1][2] = number_of_inputs_var.get()
-            one_[rows_var.get()-1][1] = type_of_gate_var.get()
-            one_[rows_var.get()-1][0] = chr(name_count)
-            current_gate = Button(self.master, text=chr(name_count) + "\n"+ type_of_gate_var.get()).place(x=100, y=one_x)
-            one_x+=250
-        
-        if cols_var.get() == 2:
-            two_[rows_var.get()-1][4] = cols_var.get()
-            two_[rows_var.get()-1][3] = rows_var.get()
-            two_[rows_var.get()-1][2] = number_of_inputs_var.get()
-            two_[rows_var.get()-1][1] = type_of_gate_var.get()
-            one_[rows_var.get()-1][0] = chr(name_count)
+        row = rows_var.get()
+        col = cols_var.get()
+        if row + col in taken:
+            create_gate_error = Toplevel(app)
+            create_gate_error.geometry("400x100")
+            error_text = Label(create_gate_error, text="The position you have specified for this\ngate is already taken by another gate.")    
+            error_text.pack(padx=20, pady=20)
+            return
 
-        if cols_var.get() == 3:
-            three_[rows_var.get()-1][4] = cols_var.get()
-            three_[rows_var.get()-1][3] = rows_var.get()
-            three_[rows_var.get()-1][2] = number_of_inputs_var.get()
-            three_[rows_var.get()-1][1] = type_of_gate_var.get()
-            one_[rows_var.get()-1][0] = chr(name_count)
+        if type_of_gate_var.get() == "NOT" and number_of_inputs_var.get()!=1:
+            create_gate_error = Toplevel(app)
+            create_gate_error.geometry("400x100")
+            error_text = Label(create_gate_error, text="The NOT gate can only accept one input.")    
+            error_text.pack(padx=20, pady=20)
+            return
+
+
+        if col == 1:
+            one_[row-1][4] = col
+            one_[row-1][3] = row
+            one_[row-1][2] = number_of_inputs_var.get()
+            one_[row-1][1] = type_of_gate_var.get()
+            one_[row-1][0] = chr(self.name_count)
+            taken.append(col+row)
+            current_gate = Button(self.master, text=type_of_gate_var.get()+"\n"+"[id={}]".format(chr(self.name_count)), width=4, height=6, bg="orange").place(x=250, y=row*200)
+            self.name_count+=1
+            return
+            
+        if col == 2:
+            two_[row-1][4] = col
+            two_[row-1][3] = row
+            two_[row-1][2] = number_of_inputs_var.get()
+            two_[row-1][1] = type_of_gate_var.get()
+            one_[row-1][0] = chr(self.name_count)
+            taken.append(col+row)
+            current_gate = Button(self.master, text=type_of_gate_var.get()+"\n"+"[id={}]".format(chr(self.name_count)), bg="orange", width=4, height=6).place(x=700, y=row*200)
+            self.name_count+=1
+            return
+
+        if col == 3:
+            three_[row-1][4] = col
+            three_[row-1][3] = row
+            three_[row-1][2] = number_of_inputs_var.get()
+            three_[row-1][1] = type_of_gate_var.get()
+            three_[row-1][0] = chr(self.name_count)
+            taken.append(col+row)
+            current_gate = Button(self.master, text= type_of_gate_var.get()+"\n"+"[id={}]".format(chr(self.name_count)), bg="orange", width=4, height=6).place(x=1150, y=row*200)
+            self.name_count+=1
+            return
     
-        if cols_var.get() == 4:
-            four_[rows_var.get()-1][4] = cols_var.get()
-            four_[rows_var.get()-1][3] = rows_var.get()
-            four_[rows_var.get()-1][2] = number_of_inputs_var.get()
-            four_[rows_var.get()-1][1] = type_of_gate_var.get()
-            one_[rows_var.get()-1][0] = chr(name_count)
+        if col == 4:
+            four_[row-1][4] = col
+            four_[row-1][3] = row
+            four_[row-1][2] = number_of_inputs_var.get()
+            four_[row-1][1] = type_of_gate_var.get()
+            four_[row-1][0] = chr(self.name_count)
+            taken.append(col+row)
+            current_gate = Button(self.master, text= type_of_gate_var.get() + "\n" + "[id={}]".format(chr(self.name_count)), bg="orange", width=4, height=6).place(x=1600, y=row*200)
+            self.name_count+=1
+            return
 
     def show():
         type_of_gate_var.set(type_of_gate_var.get())
