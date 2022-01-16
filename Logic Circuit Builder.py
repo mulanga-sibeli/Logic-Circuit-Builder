@@ -57,7 +57,7 @@ class Window(Frame):
     def init_window(self):
         mainframe_ = Frame(self.master, bg="gray")
         mainframe_.pack(side=TOP, fill="both")
-        mainexit_ = Button(mainframe_, text="Exit", command= self.master.quit, bg="orange")
+        mainexit_ = Button(mainframe_, text="X", command= self.master.quit, bg="red")
         mainexit_.pack(side=RIGHT, padx=5, pady=5)
         creategate_ = Button(mainframe_, text="Create", command=self.create_gate_window_, bg="orange")
         creategate_.pack(side=LEFT, padx=5,pady=5)
@@ -107,11 +107,19 @@ class Window(Frame):
 
         if type_of_gate_var.get() == "NOT" and number_of_inputs_var.get()!=1:
             create_gate_error = Toplevel(app)
+            create_gate_error.title("Error")
             create_gate_error.geometry("400x100")
             error_text = Label(create_gate_error, text="The NOT gate can only accept one input.")    
             error_text.pack(padx=20, pady=20)
             return
 
+        if type_of_gate_var.get() != "NOT" and number_of_inputs_var.get()==1:
+            create_gate_error = Toplevel(app)
+            create_gate_error.title("Error")
+            create_gate_error.geometry("400x100")
+            error_text = Label(create_gate_error, text="The {} gate accepts at least 2 inputs.".format(type_of_gate_var.get()))    
+            error_text.pack(padx=20, pady=20)
+            return
 
         if col == 1:
             one_[row-1][4] = col
