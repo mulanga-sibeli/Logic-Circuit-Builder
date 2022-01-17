@@ -19,24 +19,26 @@ taken = []
 
 entries = []
 
-outputs = []
 
-def OR_(type, inputs, idd):
+
+def OR_(type, inputs):
     if type == "OR":
         result = inputs[0]
-        for bitt in inputs[2:]:
-            if result == 1 or bitt == 1:
+        for i in range(1, len(inputs)):
+            print(i)
+            if result == 1 or inputs[i] == 1:
                 result = 1
             else:
                 result = 0
         return result
-    return NOR_(type, inputs)
+    else:
+        return AND_(type, inputs)
 
 def AND_(type, inputs):
     if type == "AND":
         result = inputs[0]
-        for bitt in inputs[2:]:
-            if result == 1 and bitt == 1:
+        for i in range(1, len(inputs)):
+            if result == 1 and inputs[i] == 1:
                 result = 1
             else:
                 result = 0
@@ -46,8 +48,8 @@ def AND_(type, inputs):
 def NOR_(type, inputs):
     if type == "NOR":
         result = inputs[0]
-        for bitt in inputs:
-            if result == 1 or bitt == 1:
+        for i in range(1, len(inputs)):
+            if result == 1 or inputs[i] == 1:
                 result = 1
             else:
                 result = 0
@@ -59,8 +61,8 @@ def NOR_(type, inputs):
 def NAND_(type, inputs):
     if type == "NOR":
         result = inputs[0]
-        for bitt in inputs:
-            if result == 1 and bitt == 1:
+        for i in range(1, len(inputs)):
+            if result == 1 and inputs[i] == 1:
                 result = 1
             else:
                 result = 0
@@ -68,10 +70,9 @@ def NAND_(type, inputs):
             return 0
         return 1
 
-
-
 class Window(Frame):
     name_count = 65
+    outputs = []
     def __init__(self, master=None):
         Frame.__init__(self,master)
         self.master = master
@@ -151,7 +152,7 @@ class Window(Frame):
             one_[row-1][1] = type_of_gate_var.get()
             one_[row-1][0] = chr(self.name_count)
             taken.append(col+row)
-            current_gate = Button(self.master, text=type_of_gate_var.get()+"\n"+"[id={}]".format(chr(self.name_count)), width=4, height=6, bg="orange").place(x=250, y=row*200)
+            current_gate = Button(self.master, text=type_of_gate_var.get()+"\n"+"[id={}]".format(chr(self.name_count)), width=4, height=8, bg="orange").place(x=250, y=row*200)
             self.name_count+=1
             return
             
@@ -162,7 +163,7 @@ class Window(Frame):
             two_[row-1][1] = type_of_gate_var.get()
             two_[row-1][0] = chr(self.name_count)
             taken.append(col+row)
-            current_gate = Button(self.master, text=type_of_gate_var.get()+"\n"+"[id={}]".format(chr(self.name_count)), bg="orange", width=4, height=6).place(x=700, y=row*200)
+            current_gate = Button(self.master, text=type_of_gate_var.get()+"\n"+"[id={}]".format(chr(self.name_count)), bg="orange", width=4, height=8).place(x=700, y=row*200)
             self.name_count+=1
             return
 
@@ -173,7 +174,7 @@ class Window(Frame):
             three_[row-1][1] = type_of_gate_var.get()
             three_[row-1][0] = chr(self.name_count)
             taken.append(col+row)
-            current_gate = Button(self.master, text= type_of_gate_var.get()+"\n"+"[id={}]".format(chr(self.name_count)), bg="orange", width=4, height=6).place(x=1150, y=row*200)
+            current_gate = Button(self.master, text= type_of_gate_var.get()+"\n"+"[id={}]".format(chr(self.name_count)), bg="orange", width=4, height=8).place(x=1150, y=row*200)
             self.name_count+=1
             return
     
@@ -184,15 +185,17 @@ class Window(Frame):
             four_[row-1][1] = type_of_gate_var.get()
             four_[row-1][0] = chr(self.name_count)
             taken.append(col+row)
-            current_gate = Button(self.master, text= type_of_gate_var.get() + "\n" + "[id={}]".format(chr(self.name_count)), bg="orange", width=4, height=6).place(x=1600, y=row*200)
+            current_gate = Button(self.master, text= type_of_gate_var.get() + "\n" + "[id={}]".format(chr(self.name_count)), bg="orange", width=4, height=8).place(x=1600, y=row*200)
             self.name_count+=1
             return
 
     def link_(self):
         linkwindow_ = Toplevel(app)
         linkwindow_.title("Link")
+        linkwindow_.attributes("-fullscreen", True)
         mainframe_ = Frame(linkwindow_, bg="gray")
         link_button_ = Button(mainframe_, text="Link", bg="orange", command=self.process).pack(side=LEFT, padx= 5, pady=5)
+        mainexit_ = Button(mainframe_, text="X",command=linkwindow_.destroy , bg="red").pack(side=RIGHT, padx=5, pady=5)
         mainframe_.pack(side=TOP, fill="both")
         for gate in one_:
             if len(gate[0]) == 0:
@@ -247,14 +250,25 @@ class Window(Frame):
             entry_frame_.place(x=1600, y=gate[3]*200)
     
     def process(self):
+        self.outputs = []
         for entryy in entries:
             self.gate_result_(entryy[1][1], str(entryy[0].get()), entryy[1][0], entryy[1][3], entryy[1][4])
-
-    def valid(self, bitts):
+        if len(self.outputs) == len(entries):
+            self.error_wrapper_("Success", "Linking was succesful, close this window.")
+        return
+        
+    def valid_1(self, bitts):
         for bitt in bitts:
             if int(bitt) != 48 and int(bitt) != 49 and int(bitt) < self.name_count and int(bitt) >= 65:
                 return False
         return True
+
+    def valid_2(self, idd):
+        for entryy in entries:
+            if entryy[1][0] == idd:
+                if len(str(entryy[0].get())) == entryy[1][2]:
+                    return True
+        return False
 
     def same_row_(self, idd1, idd2):
         col1 = 0
@@ -272,38 +286,45 @@ class Window(Frame):
         for i in range(len(bitts)):
             if ord(bitts[i])!=48 and ord(bitts[i])!=49:
                 found = False
-                for output in outputs:
+                for output in self.outputs:
                     if output[0] == bitts[i]:
                         if self.same_row_(bitts[i], idd):
                             self.error_wrapper_("Error", "You may be trying to use a gate of the same column or less as input to a gate of the same column or higher.")
+                            self.outputs = []
                             return
                         found = True
                         bitts[i] = output[1]
                 if found == False:
                     self.error_wrapper_("Error", "You may be trying to use a gate of the same column or less as input to a gate of the same column or higher.")
+                    self.outputs = []
                     return
             else:
                 bitts[i] = int(bitts[i])
         return bitts
 
-
     def gate_result_(self, type, inputs, idd, row, col):
         inputs = inputs.replace(" ","")
         inputs = list(str(inputs))
-        if self.valid(inputs):
+        if not self.valid_2(idd):
+            self.error_wrapper_("Error", "One of the gates has an incomplete number of inputs.")
+            self.outputs = []
+            return
+
+        if self.valid_1(inputs):
             inputs = self.transform(inputs, idd, row, col)
         else:
             self.error_wrapper_("Error", "Input in one of the gates is invalid.")
+            self.outputs = []
             return
         gate_result = []
         gate_result.append(idd)
-        gate_result.append(OR_(type, inputs, idd))
-        outputs.append(gate_result)
+        gate_result.append(OR_(type, inputs))
+        print(OR_(type, inputs))
+        self.outputs.append(gate_result)
 
     def show():
         type_of_gate_var.set(type_of_gate_var.get())
 
-        
 app = tk.Tk()
 main = Window(app)
 app.title("Gates")
