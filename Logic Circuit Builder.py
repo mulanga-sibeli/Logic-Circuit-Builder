@@ -64,6 +64,7 @@ class Window(Frame):
     two_ = [[[],[],[],[],[]],[[],[],[],[],[]],[[],[],[],[],[]],[[],[],[],[],[]],[[],[],[],[],[]]]
     three_ = [[[],[],[],[],[]],[[],[],[],[],[]],[[],[],[],[],[]],[[],[],[],[],[]],[[],[],[],[],[]]]
     four_ = [[[],[],[],[],[]],[[],[],[],[],[]],[[],[],[],[],[]],[[],[],[],[],[]],[[],[],[],[],[]]]
+    inputs = []
     def __init__(self, master=None):
         Frame.__init__(self,master)
         self.master = master
@@ -74,10 +75,16 @@ class Window(Frame):
         mainframe_.pack(side=TOP, fill="both")
         mainexit_ = Button(mainframe_, text="X",command=self.master.quit, bg="red")
         mainexit_.pack(side=RIGHT, padx=5, pady=5)
-        mainlink_ = Button(mainframe_, text="Link",command=self.link_,bg="orange")
+        mainlink_ = Button(mainframe_, text="Link",command=lambda:[self.sub_reset(), self.link_()],bg="orange")
         mainlink_.pack(side=RIGHT, padx = 1, pady = 5)
         creategate_ = Button(mainframe_, text="Create",command=self.create_gate_window_,bg="orange")
         creategate_.pack(side=LEFT, padx=5,pady=5)
+
+    def sub_reset(self):
+        self.entries = []
+        self.outputs = []
+        self.inputs = []
+        self.link_window_list = []
 
     def create_gate_window_(self):
         createwindow = Toplevel(app)
@@ -140,7 +147,7 @@ class Window(Frame):
             self.one_[row-1][1] = type_of_gate_var.get()
             self.one_[row-1][0] = chr(self.name_count)
             self.taken.append(col+row)
-            current_gate = Button(self.master, text=type_of_gate_var.get()+"\n"+"[id={}]".format(chr(self.name_count)), width=4, height=10, bg="orange").place(x=250, y=row*150)
+            current_gate = Button(self.master, text=type_of_gate_var.get()+"\n"+"[id={}]".format(chr(self.name_count)), width=4, height=10, bg="orange", pady=10).place(x=250, y=row*150)
             self.name_count+=1
             return
             
@@ -151,7 +158,7 @@ class Window(Frame):
             self.two_[row-1][1] = type_of_gate_var.get()
             self.two_[row-1][0] = chr(self.name_count)
             self.taken.append(col+row)
-            current_gate = Button(self.master, text=type_of_gate_var.get()+"\n"+"[id={}]".format(chr(self.name_count)), bg="orange", width=4, height=10).place(x=700, y=row*150 + 75)
+            current_gate = Button(self.master, text=type_of_gate_var.get()+"\n"+"[id={}]".format(chr(self.name_count)), bg="orange", width=4, height=10, pady=10).place(x=700, y=row*150 + 75)
             self.name_count+=1
             return
 
@@ -162,7 +169,7 @@ class Window(Frame):
             self.three_[row-1][1] = type_of_gate_var.get()
             self.three_[row-1][0] = chr(self.name_count)
             self.taken.append(col+row)
-            current_gate = Button(self.master, text= type_of_gate_var.get()+"\n"+"[id={}]".format(chr(self.name_count)), bg="orange", width=4, height=10).place(x=1150, y=row*150 + 75)
+            current_gate = Button(self.master, text= type_of_gate_var.get()+"\n"+"[id={}]".format(chr(self.name_count)), bg="orange", width=4, height=10, pady=10).place(x=1150, y=row*150 + 75)
             self.name_count+=1
             return
     
@@ -173,16 +180,12 @@ class Window(Frame):
             self.four_[row-1][1] = type_of_gate_var.get()
             self.four_[row-1][0] = chr(self.name_count)
             self.taken.append(col+row)
-            current_gate = Button(self.master, text= type_of_gate_var.get() + "\n" + "[id={}]".format(chr(self.name_count)), bg="orange", width=4, height=10).place(x=1600, y=row*150 + 75)
+            current_gate = Button(self.master, text= type_of_gate_var.get() + "\n" + "[id={}]".format(chr(self.name_count)), bg="orange", width=4, height=10, pady=10).place(x=1600, y=row*150 + 75)
             self.name_count+=1
             return
 
     def link_(self):
-        self.entries = []
-        self.outputs = []
-        self.link_window_list = []
-        link_window_list = []
-        linkwindow_ = Toplevel(app)
+        linkwindow_ = Toplevel(self.master)
         self.link_window_list.append(linkwindow_)
         linkwindow_.title("Link")
         linkwindow_.attributes("-fullscreen", True)
@@ -244,8 +247,8 @@ class Window(Frame):
     
     def process(self):
         self.outputs = []
-        print(len(self.entries))
         for entryy in self.entries:
+            self.inputs.append([entryy[1][0],str(entryy[0].get())])
             self.gate_result_(entryy[1][1], str(entryy[0].get()), entryy[1][0], entryy[1][3], entryy[1][4])
         return
         
@@ -253,19 +256,16 @@ class Window(Frame):
         if len(self.outputs) != len(self.entries):
             return
         for processed in self.outputs:
-            current_processed = processed
             current_frame = Frame(self.master)
             current_col = -1
             current_row = -1
-            number_of_inputs = -1
             input_values = []
-            for gatee in self.entries:
-                if current_processed[0] == gatee[1][0]:
-                    current_col = gatee[1][4]
-                    current_row = gatee[1][3]
-                    number_of_inputs = len(str(gatee[0].get()))
-                    input_values = list(str(gatee[0].get()))
-            
+            for i in range(len(self.entries)):
+                if processed[0] == self.entries[i][1][0]:
+                    current_col = self.entries[i][1][4]
+                    current_row = self.entries[i][1][3]
+                    input_values = self.inputs[i][1]
+                    
             for i in range(len(input_values)):
                 current_button = Button(current_frame, text="{}".format(input_values[i]), bg="orange", height=1, width=6)
                 self.buttons.append(current_button)
@@ -285,12 +285,12 @@ class Window(Frame):
             if current_row != 1:
                 y_val = 145 * current_row + 75
             current_frame.place(x = x_val, y = y_val)
-            current_button = Button(self.master, height = 1, width=6 ,bg="orange",text="{}".format(current_processed[1])).place(x=x_val+175, y = y_val+60)
+            current_button = Button(self.master, height = 1, width=6 ,bg="orange",text="{}".format(processed[1])).place(x=x_val, y = y_val)
             self.link_window_list[0].destroy()
 
     def valid_1(self, bitts):
         for bitt in bitts:
-            if int(bitt) != 48 and int(bitt) != 49 and int(bitt) < self.name_count and int(bitt) >= 65:
+            if ord(bitt) != 48 and ord(bitt) != 49 and (ord(bitt) >= self.name_count or ord(bitt) < 65):
                 return False
         return True
 
@@ -306,9 +306,9 @@ class Window(Frame):
         col2 = 0
         for gate in self.entries:
             if gate[1][0] == idd1:
-                col1 = gate[4]
+                col1 = gate[1][4]
             if gate[1][0] == idd2:
-                col2 = gate[4]
+                col2 = gate[1][4]
         if col1 == col2:
             return True
         return False
