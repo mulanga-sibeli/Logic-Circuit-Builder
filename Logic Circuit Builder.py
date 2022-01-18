@@ -4,6 +4,7 @@ from os import link
 from textwrap import fill
 import tkinter as tk
 from tkinter import *
+from turtle import pos
 from unicodedata import name
 
 def OR_(type, inputs):
@@ -128,9 +129,10 @@ class Window(Frame):
     def create_gate(self):
         row = rows_var.get()
         col = cols_var.get()
-        if row + col in self.taken:
-            self.error_wrapper_("Error", "The position you have specified for this\ngate is already taken by another gate.", 300, 75)
-            return
+        for position in self.taken:
+            if row == position[0] and col == position[1]:
+                self.error_wrapper_("Error", "The position you have specified for this\ngate is already taken by another gate.", 300, 75)
+                return
 
         if type_of_gate_var.get() == "NOT" and number_of_inputs_var.get()!=1:
             self.error_wrapper_("Error", "The NOT gate can only accept one input.", 250, 50)
@@ -146,8 +148,9 @@ class Window(Frame):
             self.one_[row-1][2] = number_of_inputs_var.get()
             self.one_[row-1][1] = type_of_gate_var.get()
             self.one_[row-1][0] = chr(self.name_count)
-            self.taken.append(col+row)
-            current_gate = Button(self.master, text=type_of_gate_var.get()+"\n"+"[id={}]".format(chr(self.name_count)), width=4, height=10, bg="orange", pady=10).place(x=250, y=row*150)
+            taken = [row ,col]
+            self.taken.append(taken)
+            current_gate = Button(self.master, text=type_of_gate_var.get()+"\n"+"[id={}]".format(chr(self.name_count)), width=4, height=10, bg="orange", pady=10).place(x=250, y=(row-1)*200 + 150)
             self.name_count+=1
             return
             
@@ -157,8 +160,9 @@ class Window(Frame):
             self.two_[row-1][2] = number_of_inputs_var.get()
             self.two_[row-1][1] = type_of_gate_var.get()
             self.two_[row-1][0] = chr(self.name_count)
-            self.taken.append(col+row)
-            current_gate = Button(self.master, text=type_of_gate_var.get()+"\n"+"[id={}]".format(chr(self.name_count)), bg="orange", width=4, height=10, pady=10).place(x=700, y=row*150 + 75)
+            taken = [row ,col]
+            self.taken.append(taken)
+            current_gate = Button(self.master, text=type_of_gate_var.get()+"\n"+"[id={}]".format(chr(self.name_count)), bg="orange", width=4, height=10, pady=10).place(x=700, y=(row-1)*200 + 150)
             self.name_count+=1
             return
 
@@ -168,8 +172,9 @@ class Window(Frame):
             self.three_[row-1][2] = number_of_inputs_var.get()
             self.three_[row-1][1] = type_of_gate_var.get()
             self.three_[row-1][0] = chr(self.name_count)
-            self.taken.append(col+row)
-            current_gate = Button(self.master, text= type_of_gate_var.get()+"\n"+"[id={}]".format(chr(self.name_count)), bg="orange", width=4, height=10, pady=10).place(x=1150, y=row*150 + 75)
+            taken = [row ,col]
+            self.taken.append(taken)
+            current_gate = Button(self.master, text= type_of_gate_var.get()+"\n"+"[id={}]".format(chr(self.name_count)), bg="orange", width=4, height=10, pady=10).place(x=1150, y=(row-1)*200 + 150)
             self.name_count+=1
             return
     
@@ -179,8 +184,9 @@ class Window(Frame):
             self.four_[row-1][2] = number_of_inputs_var.get()
             self.four_[row-1][1] = type_of_gate_var.get()
             self.four_[row-1][0] = chr(self.name_count)
-            self.taken.append(col+row)
-            current_gate = Button(self.master, text= type_of_gate_var.get() + "\n" + "[id={}]".format(chr(self.name_count)), bg="orange", width=4, height=10, pady=10).place(x=1600, y=row*150 + 75)
+            taken = [row ,col]
+            self.taken.append(taken)
+            current_gate = Button(self.master, text= type_of_gate_var.get() + "\n" + "[id={}]".format(chr(self.name_count)), bg="orange", width=4, height=10, pady=10).place(x=1600, y=(row-1)*200 + 150)
             self.name_count+=1
             return
 
@@ -272,6 +278,7 @@ class Window(Frame):
                 current_button.pack(padx=1, pady=8)
             
             x_val = -1
+            y_val = -1
             if current_col == 1:
                 x_val = 150
             if current_col == 2:
@@ -280,12 +287,8 @@ class Window(Frame):
                 x_val = 1050
             if current_col == 4:
                 x_val = 1500
-            if current_row == 1:
-                y_val = 145 * current_row
-            if current_row != 1:
-                y_val = 145 * current_row + 75
-            current_frame.place(x = x_val, y = y_val)
-            current_button = Button(self.master, height = 1, width=6 ,bg="orange",text="{}".format(processed[1])).place(x=x_val, y = y_val)
+            current_frame.place(x = x_val, y = (current_row-1)*200 + 150)
+            current_button = Button(self.master, height = 1, width=6 ,bg="orange",text="{}".format(processed[1])).place(x=x_val+200, y=(current_row-1)*200 + 225)
             self.link_window_list[0].destroy()
 
     def valid_1(self, bitts):
