@@ -41,7 +41,7 @@ def NOR_(type, inputs):
         if result == 1:
             return 0
         return 1
-    return NOR_(type, inputs)
+    return NAND_(type, inputs)
 
 def NAND_(type, inputs):
     if type == "NOR":
@@ -54,13 +54,35 @@ def NAND_(type, inputs):
         if result == 1:
             return 0
         return 1
+    return XOR_(type, inputs)
+
+def XOR_(type, inputs):
+    if type == "XOR":
+        result = inputs[0]
+        for i in range(1, len(inputs)):
+            if result != inputs[i]:
+                result = 1
+            else:
+                result = 0
+        return result
+    return XNOR_(type, inputs)
+
+def XNOR_(type, inputs):
+    if type == "XNOR":
+        result = inputs[0]
+        for i in range(1, len(inputs)):
+            if result == inputs[i]:
+                result = 1
+            else:
+                result = 0
+        return result
 
 class Window(Frame):
     name_count = 65
     outputs = []
     entries = []
     taken = []
-    buttons = []
+    packed_widgets = []
     one_ = [[[],[],[],[],[]],[[],[],[],[],[]],[[],[],[],[],[]],[[],[],[],[],[]],[[],[],[],[],[]]]
     two_ = [[[],[],[],[],[]],[[],[],[],[],[]],[[],[],[],[],[]],[[],[],[],[],[]],[[],[],[],[],[]]]
     three_ = [[[],[],[],[],[]],[[],[],[],[],[]],[[],[],[],[],[]],[[],[],[],[],[]],[[],[],[],[],[]]]
@@ -78,8 +100,24 @@ class Window(Frame):
         mainexit_.pack(side=RIGHT, padx=5, pady=5)
         mainlink_ = Button(mainframe_, text="Link",command=lambda:[self.sub_reset(), self.link_()],bg="orange")
         mainlink_.pack(side=RIGHT, padx = 1, pady = 5)
+        mainreset_ = Button(mainframe_, text="Reset",command=self.main_reset,bg="orange")
+        mainreset_.pack(side=RIGHT, padx = 1, pady = 5)
         creategate_ = Button(mainframe_, text="Create",command=self.create_gate_window_,bg="orange")
         creategate_.pack(side=LEFT, padx=5,pady=5)
+
+    def main_reset(self):
+        self.name_count = 65
+        self.outputs = []
+        self.entries = []
+        self.taken = []
+        for packed_widget in self.packed_widgets:
+            packed_widget.destroy()
+        self.packed_widgets = []
+        self.one_ = [[[],[],[],[],[]],[[],[],[],[],[]],[[],[],[],[],[]],[[],[],[],[],[]],[[],[],[],[],[]]]
+        self.two_ = [[[],[],[],[],[]],[[],[],[],[],[]],[[],[],[],[],[]],[[],[],[],[],[]],[[],[],[],[],[]]]
+        self.three_ = [[[],[],[],[],[]],[[],[],[],[],[]],[[],[],[],[],[]],[[],[],[],[],[]],[[],[],[],[],[]]]
+        self.four_ = [[[],[],[],[],[]],[[],[],[],[],[]],[[],[],[],[],[]],[[],[],[],[],[]],[[],[],[],[],[]]]
+        self.inputs = []
 
     def sub_reset(self):
         self.entries = []
@@ -106,7 +144,7 @@ class Window(Frame):
         terframe_2 = Frame(createwindow)
         terframe_2.pack(fill="both")
         type_of_gate = Label(secframe_, text = "Type").pack(side=LEFT, padx=5, pady=5)
-        gate_options_ = ["OR", "AND", "NOT", "NAND", "NOR"]
+        gate_options_ = ["OR", "AND", "NOT", "NAND", "NOR", "XOR", "XNOR"]
         number_options = [1, 2, 3, 4]
         gate_options_drop = OptionMenu(secframe_, type_of_gate_var, *gate_options_)
         gate_options_drop.pack(side=RIGHT)
@@ -150,7 +188,9 @@ class Window(Frame):
             self.one_[row-1][0] = chr(self.name_count)
             taken = [row ,col]
             self.taken.append(taken)
-            current_gate = Button(self.master, text=type_of_gate_var.get()+"\n"+"[id={}]".format(chr(self.name_count)), width=4, height=10, bg="orange", pady=10).place(x=250, y=(row-1)*200 + 150)
+            current_gate = Button(self.master, text=type_of_gate_var.get()+"\n"+"[id={}]".format(chr(self.name_count)), width=4, height=10, bg="orange", pady=10)
+            self.packed_widgets.append(current_gate)
+            current_gate.place(x=250, y =(row-1)*200+150)
             self.name_count+=1
             return
             
@@ -162,7 +202,9 @@ class Window(Frame):
             self.two_[row-1][0] = chr(self.name_count)
             taken = [row ,col]
             self.taken.append(taken)
-            current_gate = Button(self.master, text=type_of_gate_var.get()+"\n"+"[id={}]".format(chr(self.name_count)), bg="orange", width=4, height=10, pady=10).place(x=700, y=(row-1)*200 + 150)
+            current_gate = Button(self.master, text=type_of_gate_var.get()+"\n"+"[id={}]".format(chr(self.name_count)), bg="orange", width=4, height=10, pady=10)
+            self.packed_widgets.append(current_gate)
+            current_gate.place(x=700, y =(row-1)*200+150)
             self.name_count+=1
             return
 
@@ -174,7 +216,9 @@ class Window(Frame):
             self.three_[row-1][0] = chr(self.name_count)
             taken = [row ,col]
             self.taken.append(taken)
-            current_gate = Button(self.master, text= type_of_gate_var.get()+"\n"+"[id={}]".format(chr(self.name_count)), bg="orange", width=4, height=10, pady=10).place(x=1150, y=(row-1)*200 + 150)
+            current_gate = Button(self.master, text= type_of_gate_var.get()+"\n"+"[id={}]".format(chr(self.name_count)), bg="orange", width=4, height=10, pady=10)
+            self.packed_widgets.append(current_gate)
+            current_gate.place(x=1150, y =(row-1)*200+150)
             self.name_count+=1
             return
     
@@ -186,7 +230,9 @@ class Window(Frame):
             self.four_[row-1][0] = chr(self.name_count)
             taken = [row ,col]
             self.taken.append(taken)
-            current_gate = Button(self.master, text= type_of_gate_var.get() + "\n" + "[id={}]".format(chr(self.name_count)), bg="orange", width=4, height=10, pady=10).place(x=1600, y=(row-1)*200 + 150)
+            current_gate = Button(self.master, text= type_of_gate_var.get() + "\n" + "[id={}]".format(chr(self.name_count)), bg="orange", width=4, height=10, pady=10)
+            self.packed_widgets.append(current_gate)
+            current_gate.place(x=1600, y =(row-1)*200+150)
             self.name_count+=1
             return
 
@@ -274,7 +320,6 @@ class Window(Frame):
                     
             for i in range(len(input_values)):
                 current_button = Button(current_frame, text="{}".format(input_values[i]), bg="orange", height=1, width=6)
-                self.buttons.append(current_button)
                 current_button.pack(padx=1, pady=8)
             
             x_val = -1
@@ -287,8 +332,11 @@ class Window(Frame):
                 x_val = 1050
             if current_col == 4:
                 x_val = 1500
+            self.packed_widgets.append(current_frame)
             current_frame.place(x = x_val, y = (current_row-1)*200 + 150)
-            current_button = Button(self.master, height = 1, width=6 ,bg="orange",text="{}".format(processed[1])).place(x=x_val+200, y=(current_row-1)*200 + 225)
+            current_button = Button(self.master, height = 1, width=6 ,bg="orange",text="{}".format(processed[1]))
+            self.packed_widgets.append(current_button)
+            current_button.place(x=x_val+200, y=(current_row-1)*200 + 225)
             self.link_window_list[0].destroy()
 
     def valid_1(self, bitts):
