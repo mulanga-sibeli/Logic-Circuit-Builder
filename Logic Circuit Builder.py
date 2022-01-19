@@ -44,7 +44,7 @@ def NOR_(type, inputs):
     return NAND_(type, inputs)
 
 def NAND_(type, inputs):
-    if type == "NOR":
+    if type == "NAND":
         result = inputs[0]
         for i in range(1, len(inputs)):
             if result == 1 and inputs[i] == 1:
@@ -76,6 +76,14 @@ def XNOR_(type, inputs):
             else:
                 result = 0
         return result
+    return NOT_(type, inputs)
+    
+def NOT_(type, inputs):
+    if type == "NOT":
+        if inputs[0] == 1:
+            return 0
+        else:
+            return 1
 
 class Window(Frame):
     name_count = 65
@@ -237,6 +245,11 @@ class Window(Frame):
             return
 
     def link_(self):
+        if len(self.packed_widgets) == 0:
+            self.error_wrapper_("Error", "No gates to link.", 250, 50)
+            return
+        if len(self.link_window_list)!=0:
+            return
         linkwindow_ = Toplevel(self.master)
         self.link_window_list.append(linkwindow_)
         linkwindow_.title("Link")
@@ -371,13 +384,15 @@ class Window(Frame):
                 for output in self.outputs:
                     if output[0] == bitts[i]:
                         if self.same_row_(bitts[i], idd):
-                            self.error_wrapper_("Error", "You may be trying to use a gate of the same column or less as input to a gate of the same column or higher.", 300, 75)
+                            self.error_wrapper_("Error", "You may be trying to use a gate of the same column or\nless as input to a gate of the same column or higher.", 300, 75)
+                            self.inputs = []
                             self.outputs = []
                             return
                         found = True
                         bitts[i] = output[1]
                 if found == False:
-                    self.error_wrapper_("Error", "You may be trying to use a gate of the same column or less as input to a gate of the same column or higher.", 300, 50)
+                    self.error_wrapper_("Error", "You may be trying to use a gate of the same column or\nless as input to a gate of the same column or higher.", 300, 75)
+                    self.inputs = []
                     self.outputs = []
                     return
             else:
@@ -388,8 +403,9 @@ class Window(Frame):
         inputs = inputs.replace(" ","")
         inputs = list(str(inputs))
         if not self.valid_2(idd):
-            self.error_wrapper_("Error", "One of the gates has an incomplete number of inputs.", 250, 50)
+            self.error_wrapper_("Error", "One of the gates has an incomplete number of inputs.", 300, 50)
             self.outputs = []
+            self.inputs = []
             return
 
         if self.valid_1(inputs):
@@ -397,6 +413,7 @@ class Window(Frame):
         else:
             self.error_wrapper_("Error", "Input in one of the gates is invalid.", 250, 50)
             self.outputs = []
+            self.inputs = []
             return
         gate_result = []
         gate_result.append(idd)
