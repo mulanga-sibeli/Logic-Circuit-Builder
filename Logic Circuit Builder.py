@@ -96,6 +96,7 @@ class Window(Frame):
     three_ = [[[],[],[],[],[]],[[],[],[],[],[]],[[],[],[],[],[]],[[],[],[],[],[]],[[],[],[],[],[]]]
     four_ = [[[],[],[],[],[]],[[],[],[],[],[]],[[],[],[],[],[]],[[],[],[],[],[]],[[],[],[],[],[]]]
     inputs = []
+    input_and_output_buttons = []
     def __init__(self, master=None):
         Frame.__init__(self,master)
         self.master = master
@@ -112,6 +113,8 @@ class Window(Frame):
         mainreset_.pack(side=RIGHT, padx = 1, pady = 5)
         creategate_ = Button(mainframe_, text="Create",command=self.create_gate_window_,bg="orange")
         creategate_.pack(side=LEFT, padx=5,pady=5)
+        undo_gate = Button(mainframe_, text="Guide", command=lambda:[self.error_wrapper_("Guide", "Author: Mulanga Sibeli.\n\nLogic-Circuit-Builder Guide:\n\nThe Create Gate button allows you to create a new gate.\n\nYou can specificy details about the gate you would like to create:\n\nRow: The Row your gate should be in. Range: (1-4).\nCol: The Column your gate should be in. Range: (1-4).\n\nType: The type of gate you would like to create.\n\nInputs: The number of inputs your gate should take.\n\nEach gate will be allocated a unique ID. These IDs will be uppercase letters.\n\nAfter creating your gates, you can now use the Link button which will open\na new window allowing you to specify inputs for each gate.\nEach gate will have a corresponding text box allowing you to type out your inputs.\n\nExamples of inputs:\n\nA11 (This means that the gate given this input will take 1 and 1 and gate A's output as input).\n\n01C (This means that the gate given this input will take 0 and 1 and gate C's output as input).\n\nAfter specifying the inputs, use the Done button which will\nnow take you back to the first window to display the resulting logic circuit.\n\nNote that you can remove everything on the screen\nand create a new circuit by using the Reset button.\n\nHAVE FUN!", 600, 600)] ,bg = "orange")
+        undo_gate.pack(side=LEFT, padx=5, pady=5)
 
     def main_reset(self):
         self.name_count = 65
@@ -121,6 +124,7 @@ class Window(Frame):
         for packed_widget in self.packed_widgets:
             packed_widget.destroy()
         self.packed_widgets = []
+        self.input_and_output_buttons = []
         self.one_ = [[[],[],[],[],[]],[[],[],[],[],[]],[[],[],[],[],[]],[[],[],[],[],[]],[[],[],[],[],[]]]
         self.two_ = [[[],[],[],[],[]],[[],[],[],[],[]],[[],[],[],[],[]],[[],[],[],[],[]],[[],[],[],[],[]]]
         self.three_ = [[[],[],[],[],[]],[[],[],[],[],[]],[[],[],[],[],[]],[[],[],[],[],[]],[[],[],[],[],[]]]
@@ -132,6 +136,9 @@ class Window(Frame):
         self.outputs = []
         self.inputs = []
         self.link_window_list = []
+
+    def undo(self):
+        self.packed_widgets[-1].destroy()
 
     def create_gate_window_(self):
         createwindow = Toplevel(app)
