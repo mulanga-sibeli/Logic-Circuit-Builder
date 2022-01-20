@@ -484,7 +484,7 @@ def undo_drawing():
         canvas.delete(lines[-1])
         lines.pop()
     except:
-        1==1
+        return None
     
 
 app = tk.Tk()
