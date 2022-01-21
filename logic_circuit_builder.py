@@ -503,7 +503,7 @@ canvas.bind('<B1-Motion>', drag)
 
 mainframe_ = Frame(canvas, bg="gray")
 mainframe_.pack(side=TOP, fill="both")
-mainexit_ = Button(mainframe_, text="X",command=quit, bg="red")
+mainexit_ = Button(mainframe_, text="X",command=app.destroy, bg="red")
 mainexit_.pack(side=RIGHT, padx=5, pady=5)
 mainlink_ = Button(mainframe_, text="Link",command=lambda:[sub_reset(), link_()],bg="orange")
 mainlink_.pack(side=RIGHT, padx = 1, pady = 5)
