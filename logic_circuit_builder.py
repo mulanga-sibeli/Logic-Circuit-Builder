@@ -7,8 +7,6 @@ from tkinter import *
 from turtle import pos
 from unicodedata import name
 
-universal_icon = "D:\comsIII\orange.png"
-
 def OR_(type, inputs):
     if type == "OR":
         result = inputs[0]
@@ -146,7 +144,6 @@ def undo():
 
 def create_gate_window_():
         createwindow = Toplevel(app)
-        createwindow.iconbitmap("D:\comsIII\orange.ico")
         mainframe_ = Frame(createwindow, bg = "gray")
         mainexit_ = Button(mainframe_, text="Cancel", command = createwindow.destroy, bg = "orange")
         maincreate_ = Button(mainframe_, text="Create",command= lambda:[create_gate(), createwindow.destroy()] , bg="orange")
@@ -179,12 +176,10 @@ def create_gate_window_():
         input_options_drop = OptionMenu(terframe_, number_of_inputs_var, *number_options).pack(side=RIGHT)
 
 def error_wrapper_(window_title, error_message, width, height):
-        global universal_icon
         error_window = Toplevel(app)
         error_window.title(window_title)
         error_window.geometry("{}x{}".format(width, height))
         message = Label(error_window, text=error_message).pack(padx=10, pady=10)
-        error_window.iconphoto(True, PhotoImage(file=universal_icon))
 
 def create_gate():
         row = rows_var.get()
@@ -283,7 +278,6 @@ def link_():
         linkwindow_ = Toplevel(app)
         link_window_list.append(linkwindow_)
         linkwindow_.title("Link")
-        linkwindow_.iconbitmap("D:\comsIII\orange.ico")
         linkwindow_.attributes("-fullscreen", True)
         mainframe_ = Frame(linkwindow_, bg="gray")
         link_button_ = Button(mainframe_, text="Link", bg="orange", command=lambda:[process(), display_results_()]).pack(side=LEFT, padx= 5, pady=5)
@@ -490,7 +484,7 @@ def undo_drawing():
         canvas.delete(lines[-1])
         lines.pop()
     except:
-        return None
+        1==1
     
 
 app = tk.Tk()
@@ -503,7 +497,7 @@ canvas.bind('<B1-Motion>', drag)
 
 mainframe_ = Frame(canvas, bg="gray")
 mainframe_.pack(side=TOP, fill="both")
-mainexit_ = Button(mainframe_, text="X",command=app.destroy, bg="red")
+mainexit_ = Button(mainframe_, text="X",command=quit, bg="red")
 mainexit_.pack(side=RIGHT, padx=5, pady=5)
 mainlink_ = Button(mainframe_, text="Link",command=lambda:[sub_reset(), link_()],bg="orange")
 mainlink_.pack(side=RIGHT, padx = 1, pady = 5)
@@ -511,13 +505,12 @@ mainreset_ = Button(mainframe_, text="Reset",command=main_reset,bg="orange")
 mainreset_.pack(side=RIGHT, padx = 1, pady = 5)
 creategate_ = Button(mainframe_, text="Create",command=create_gate_window_,bg="orange")
 creategate_.pack(side=LEFT, padx=5,pady=5)
-guide_button = Button(mainframe_, text="Guide", command=lambda:[error_wrapper_("Guide", "Author: Mulanga Sibeli.\n\nLogic-Circuit-Builder Guide:\n\nThe Create Gate button allows you to create a new gate.\n\nYou can specificy details about the gate you would like to create:\n\nRow: The Row your gate should be in. Range: (1-4).\nCol: The Column your gate should be in. Range: (1-4).\n\nType: The type of gate you would like to create.\n\nInputs: The number of inputs your gate should take.\n\nEach gate will be allocated a unique ID. These IDs will be uppercase letters.\n\nAfter creating your gates, you can now use the Link button which will open\na new window allowing you to specify inputs for each gate.\nEach gate will have a corresponding text box allowing you to type out your inputs.\n\nExamples of inputs:\n\nA11 (This means that the gate given this input will take 1 and 1 and gate A's output as input).\n\n01C (This means that the gate given this input will take 0 and 1 and gate C's output as input).\n\nAfter specifying the inputs, use the Done button which will\nnow take you back to the first window to display the resulting logic circuit.\n\nNote that you can remove everything on the screen\nand create a new circuit by using the Reset button.\n\nNote that if you wish to draw lines on your circuit,\nyou can click your mouse anywhere on the screen, drag\nit and drop it where you want the drawing to end.\nDrawing mistakes can be fixed by the Undo Drawing button.\n\nHAVE FUN!", 600, 750)] ,bg = "orange")
+guide_button = Button(mainframe_, text="Guide", command=lambda:[error_wrapper_("Guide", "Author: Mulanga Sibeli.\n\nLogic-Circuit-Builder Guide:\n\nThe Create Gate button allows you to create a new gate.\n\nYou can specificy details about the gate you would like to create:\n\nRow: The Row your gate should be in. Range: (1-4).\nCol: The Column your gate should be in. Range: (1-4).\n\nType: The type of gate you would like to create.\n\nInputs: The number of inputs your gate should take.\n\nEach gate will be allocated a unique ID. These IDs will be uppercase letters.\n\nAfter creating your gates, you can now use the Link button which will open\na new window allowing you to specify inputs for each gate.\nEach gate will have a corresponding text box allowing you to type out your inputs.\n\nExamples of inputs:\n\nA11 (This means that the gate given this input will take 1 and 1 and gate A's output as input).\n\n01C (This means that the gate given this input will take 0 and 1 and gate C's output as input).\n\nAfter specifying the inputs, use the Done button which will\nnow take you back to the first window to display the resulting logic circuit.\n\nNote that you can remove everything on the screen\nand create a new circuit by using the Reset button.\n\nNote that if you wish to draw lines on your circuit,\nyou can click your mouse anywhere on the screen, drag\nit and click it again to end the line drawing.\nDrawing mistakes can be fixed by the Undo Drawing button.\n\nHAVE FUN!", 600, 750)] ,bg = "orange")
 guide_button.pack(side=LEFT, padx=5, pady=5)
 undo_drawing_button = Button(mainframe_, text="Undo Drawing", command=undo_drawing, bg="orange")
 undo_drawing_button.pack(side=LEFT, padx=5, pady=5)
         
 app.title("Gates")
-app.iconbitmap("D:\comsIII\orange.ico")
 app.attributes("-fullscreen", True)
 type_of_gate_var = StringVar()
 type_of_gate_var.set("OR")
